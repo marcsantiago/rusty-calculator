@@ -41,7 +41,7 @@ impl Calculator {
         let tokens: Vec<char> = input.chars().filter(|c| !c.is_whitespace()).collect();
         while index < tokens.len() {
             let current_token = tokens[index];
-            if current_token.is_ascii_digit() {
+            if current_token.is_ascii_digit() || current_token == '.' {
                 let (new_index, num_s) = Self::handle_parsing_digits(index, &tokens);
                 output.push(num_s);
                 index = new_index;
@@ -79,7 +79,7 @@ impl Calculator {
                 break;
             }
             token = tokens[current_index];
-            if !token.is_ascii_digit() {
+            if !token.is_ascii_digit() && token != '.' {
                 break;
             }
             num_s += &token.to_string();
@@ -215,17 +215,29 @@ mod tests {
             ]
         );
 
-        // let res = cal.parse_input("3.0 + 4 + 5").unwrap();
-        // assert_eq!(
-        //     res,
-        //     vec![
-        //         String::from("3.0"),
-        //         String::from("4"),
-        //         String::from("+"),
-        //         String::from("5"),
-        //         String::from("+")
-        //     ]
-        // );
+        let res = cal.parse_input("3.0 + 4 + 5").unwrap();
+        assert_eq!(
+            res,
+            vec![
+                String::from("3.0"),
+                String::from("4"),
+                String::from("+"),
+                String::from("5"),
+                String::from("+")
+            ]
+        );
+
+        let res = cal.parse_input(".04 + 4 + 5").unwrap();
+        assert_eq!(
+            res,
+            vec![
+                String::from(".04"),
+                String::from("4"),
+                String::from("+"),
+                String::from("5"),
+                String::from("+")
+            ]
+        );
 
         let res = cal.parse_input("3+4").unwrap();
         assert_eq!(
@@ -311,12 +323,12 @@ mod tests {
         assert_eq!(result, 3.0);
     }
 
-    // #[test]
-    // fn test_evaluate() {
-    //     let cal = Calculator::new();
-    //     let result = cal
-    //         .evaluate(String::from("(15 + 7) / 2 - (65 - 61) * 2"))
-    //         .unwrap();
-    //     assert_eq!(result, 3.0);
-    // }
+    #[test]
+    fn test_evaluate() {
+        let cal = Calculator::new();
+        let result = cal
+            .evaluate(String::from("(15 + 7) / 2 - (65 - 61) * 2"))
+            .unwrap();
+        assert_eq!(result, 3.0);
+    }
 }
