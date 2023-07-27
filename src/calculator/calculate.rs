@@ -5,7 +5,7 @@ use thiserror::Error;
 // a stack may be implemented either on top of Vec or LinkedList (both feature pop_back and push_back)
 // a queue may be implemented either on top of VecDeque or LinkedList (both feature pop_front and push_back)
 //  In general, I would advise to use Vec for a stack and VecDeque for a queue
-
+#[allow(dead_code)]
 #[derive(Error, Debug)]
 enum ProcessingError {
     #[error("Unknown token \"{0}\" at index {1}")]
@@ -22,14 +22,19 @@ enum ProcessingError {
     ArgumentsError,
 }
 
-struct Calculator {
-    operators_by_precedence: HashMap<char, u8>,
+#[allow(dead_code)]
+#[derive(Default, Debug)]
+pub struct Calculator {
+    pub operators_by_precedence: HashMap<char, u8>,
+    pub supported_operators: Vec<char>,
 }
 
+#[allow(dead_code)]
 impl Calculator {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Calculator {
             operators_by_precedence: HashMap::from([('+', 1), ('-', 1), ('*', 2), ('/', 2)]),
+            supported_operators: vec!['+', '-', '*', '/'],
         }
     }
 
@@ -197,6 +202,7 @@ impl Calculator {
     }
 }
 
+#[allow(unused_imports)]
 mod tests {
     use super::*;
     #[test]
