@@ -1,6 +1,9 @@
 use crate::calculator;
-use gloo::console::info;
+use crate::keyboard_event_helper::keyboard_code_to_character;
+use gloo::console::{info, log};
 use gloo::events::EventListener;
+use js_sys::Math::log;
+use std::char;
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;
 
@@ -107,11 +110,30 @@ impl Component for App {
                 true
             }
             Msg::KeyEvent { event } => {
-                let log_line = &format!(
-                    "Key event in browser, no action required. Pressed: {:?}",
-                    event.key_code()
-                );
-                info!(log_line);
+                let ch = keyboard_code_to_character(event);
+                match ch {
+                    'd' => {
+                        self.expression.pop();
+                        if self.expression.len() == 0 {
+                            self.expression.push('0');
+                        }
+                    }
+                    '=' => {
+                        self.evaluate();
+                    }
+                    '%' => {
+                        self.evaluate_as_percent();
+                    }
+                    '\0' => {}
+                    _ => {
+                        if self.expression.len() == 1 {
+                            if self.expression == "0" {
+                                self.expression.clear();
+                            }
+                        }
+                        self.expression.push(ch);
+                    }
+                }
                 true
             }
         };

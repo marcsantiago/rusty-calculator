@@ -1,5 +1,6 @@
 mod app;
 mod calculator;
+mod keyboard_event_helper;
 
 use app::App;
 
