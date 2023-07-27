@@ -1,8 +1,6 @@
 use crate::calculator;
 use crate::keyboard_event_helper::keyboard_code_to_character;
-use gloo::console::{info, log};
 use gloo::events::EventListener;
-use js_sys::Math::log;
 use std::char;
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;
