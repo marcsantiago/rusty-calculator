@@ -64,6 +64,38 @@ impl App {
         }
         self.answer = res;
     }
+
+    fn handle_input(&mut self, ch: char) {
+        if self.expression.len() == 1 {
+            if self.expression == "0" {
+                self.expression.clear();
+            }
+        }
+
+        if self.expression.len() > 0 {
+            if ch == '.' {
+                if self.expression.chars().last().is_some_and(|s| s != '.') {
+                    self.expression.push(ch);
+                }
+                return;
+            }
+        }
+        self.expression.push(ch);
+    }
+
+    fn handle_clear(&mut self) {
+        self.expression.clear();
+        self.expression.push('0');
+        self.answer.clear();
+        self.answer.push('0');
+    }
+
+    fn handle_delete(&mut self) {
+        self.expression.pop();
+        if self.expression.len() == 0 {
+            self.expression.push('0');
+        }
+    }
 }
 
 impl Component for App {
@@ -77,26 +109,15 @@ impl Component for App {
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
         return match msg {
             Msg::Input(ch) => {
-                if self.expression.len() == 1 {
-                    if self.expression == "0" {
-                        self.expression.clear();
-                    }
-                }
-                self.expression.push(ch);
+                self.handle_input(ch);
                 true
             }
             Msg::Clear => {
-                self.expression.clear();
-                self.expression.push('0');
-                self.answer.clear();
-                self.answer.push('0');
+                self.handle_clear();
                 true
             }
             Msg::Delete => {
-                self.expression.pop();
-                if self.expression.len() == 0 {
-                    self.expression.push('0');
-                }
+                self.handle_delete();
                 true
             }
             Msg::Percent => {
@@ -109,30 +130,26 @@ impl Component for App {
             }
             Msg::KeyEvent { event } => {
                 let ch = keyboard_code_to_character(event);
-                match ch {
+                let change = match ch {
+                    '\0' => false,
                     'd' => {
-                        self.expression.pop();
-                        if self.expression.len() == 0 {
-                            self.expression.push('0');
-                        }
+                        self.handle_delete();
+                        true
                     }
                     '=' => {
                         self.evaluate();
+                        true
                     }
                     '%' => {
                         self.evaluate_as_percent();
+                        true
                     }
-                    '\0' => {}
                     _ => {
-                        if self.expression.len() == 1 {
-                            if self.expression == "0" {
-                                self.expression.clear();
-                            }
-                        }
-                        self.expression.push(ch);
+                        self.handle_input(ch);
+                        true
                     }
-                }
-                true
+                };
+                change
             }
         };
     }
